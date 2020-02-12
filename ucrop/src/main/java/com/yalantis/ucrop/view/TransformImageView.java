@@ -7,6 +7,7 @@ import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.util.AttributeSet;
+import android.util.DisplayMetrics;
 import android.util.Log;
 
 import com.yalantis.ucrop.callback.BitmapLoadCallback;
@@ -33,6 +34,7 @@ public class TransformImageView extends AppCompatImageView {
     private static final int RECT_CORNER_POINTS_COORDS = 8;
     private static final int RECT_CENTER_POINT_COORDS = 2;
     private static final int MATRIX_VALUES_COUNT = 9;
+    private static final int BITMAP_SCALE = 2;
 
     protected final float[] mCurrentImageCorners = new float[RECT_CORNER_POINTS_COORDS];
     protected final float[] mCurrentImageCenter = new float[RECT_CENTER_POINT_COORDS];
@@ -115,7 +117,12 @@ public class TransformImageView extends AppCompatImageView {
 
     @Override
     public void setImageBitmap(final Bitmap bitmap) {
-        setImageDrawable(new FastBitmapDrawable(bitmap));
+        DisplayMetrics dm = getResources().getDisplayMetrics();
+        setImageDrawable(new FastBitmapDrawable(
+                bitmap,
+                dm.widthPixels * BITMAP_SCALE,
+                dm.heightPixels * BITMAP_SCALE
+        ));
     }
 
     public String getImageInputPath() {

@@ -30,9 +30,24 @@ public class FastBitmapDrawable extends Drawable {
     private int mAlpha;
     private int mWidth, mHeight;
 
-    public FastBitmapDrawable(Bitmap b) {
+    public FastBitmapDrawable(Bitmap b, int maxWidth, int maxHeight) {
         mAlpha = 255;
-        setBitmap(b);
+
+        float scale = Math.min(1.0f, (float) maxWidth / b.getWidth());
+        scale = Math.min(scale, (float) maxHeight / b.getHeight());
+
+        Bitmap bitmap;
+        if (scale < 1.0f) {
+            bitmap = Bitmap.createScaledBitmap(
+                    b,
+                    (int) (b.getWidth() * scale),
+                    (int) (b.getHeight() * scale),
+                    false
+            );
+        } else {
+            bitmap = b;
+        }
+        setBitmap(bitmap);
     }
 
     @Override
