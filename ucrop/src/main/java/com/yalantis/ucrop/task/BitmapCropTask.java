@@ -126,7 +126,8 @@ public class BitmapCropTask extends AsyncTask<Void, Void, Throwable> {
         }
 
         // Rotate if needed
-        if (mCurrentAngle != 0) {
+        boolean shouldRotate = mCurrentAngle != 0;
+        if (shouldRotate) {
             Matrix tempMatrix = new Matrix();
             tempMatrix.setRotate(mCurrentAngle, mViewBitmap.getWidth() / 2, mViewBitmap.getHeight() / 2);
 
@@ -144,9 +145,11 @@ public class BitmapCropTask extends AsyncTask<Void, Void, Throwable> {
         mCroppedImageHeight = Math.round(mCropRect.height() / mCurrentScale);
 
         boolean shouldCrop = shouldCrop(mCroppedImageWidth, mCroppedImageHeight);
-        Log.i(TAG, "Should crop: " + shouldCrop);
+        Log.i(TAG, "Should crop: " + shouldCrop + ". Current angle: " + mCurrentAngle);
 
-        if (shouldCrop) {
+        // ExifInfo used to rotate image in view, so if exif is 90°,
+        // bitmap will be rotated, so mCurrentAngle will be 0, but we still have to save it
+        if (shouldCrop || shouldRotate || mExifInfo.getExifDegrees() != 0) {
             ExifInterface originalExif = new ExifInterface(mImageInputPath);
             saveImage(Bitmap.createBitmap(mViewBitmap, cropOffsetX, cropOffsetY, mCroppedImageWidth, mCroppedImageHeight));
             if (mCompressFormat.equals(Bitmap.CompressFormat.JPEG)) {
